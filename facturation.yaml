@@ -1,0 +1,128 @@
+openapi: 3.0.0
+info:
+  title: Servicio de Facturación - Plataforma Ecommerce
+  version: 1.0.0
+  description: API para generación y consulta de facturas desde órdenes pagadas.
+
+servers:
+  - url: http://localhost:8086
+    description: Entorno local de desarrollo
+
+paths:
+  /facturas:
+    post:
+      summary: Crear factura desde una orden
+      description: Genera una factura con base en una orden confirmada y pagada.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - orden_id
+              properties:
+                orden_id:
+                  type: string
+      responses:
+        '201':
+          description: Factura generada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Factura'
+        '400':
+          description: Datos inválidos
+        '409':
+          description: Ya existe factura para esta orden
+
+  /facturas/{id}:
+    get:
+      summary: Consultar factura por ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Datos de la factura
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Factura'
+        '404':
+          description: Factura no encontrada
+
+  /facturas/orden/{orden_id}:
+    get:
+      summary: Consultar factura por ID de orden
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: orden_id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Factura asociada a la orden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Factura'
+        '404':
+          description: No encontrada
+
+components:
+  schemas:
+    Factura:
+      type: object
+      properties:
+        id:
+          type: string
+        numero:
+          type: string
+        orden_id:
+          type: string
+        fecha_emision:
+          type: string
+          format: date-time
+        cliente:
+          type: object
+          properties:
+            nombre:
+              type: string
+            email:
+              type: string
+            identificacion:
+              type: string
+        total:
+          type: number
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              producto_id:
+                type: string
+              nombre:
+                type: string
+              cantidad:
+                type: integer
+              precio_unitario:
+                type: number
+              subtotal:
+                type: number
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

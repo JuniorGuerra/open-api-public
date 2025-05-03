@@ -1,0 +1,147 @@
+openapi: 3.0.0
+info:
+  title: Servicio de Órdenes - Plataforma Ecommerce
+  version: 1.0.0
+  description: API para gestión de pedidos, checkout y estados.
+
+servers:
+  - url: http://localhost:8084
+    description: Entorno local de desarrollo
+
+paths:
+  /ordenes:
+    get:
+      summary: Listar órdenes del usuario autenticado
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Lista de órdenes del usuario
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Orden'
+        '401':
+          description: No autorizado
+
+    post:
+      summary: Crear nueva orden desde carrito
+      description: Inicia un checkout, genera la orden y procesa el pago.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: false
+        description: Si el carrito se gestiona externamente, puede omitirse.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                direccion_envio:
+                  type: string
+      responses:
+        '201':
+          description: Orden creada exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Orden'
+        '400':
+          description: Error en datos o carrito vacío
+        '402':
+          description: Error de pago
+
+  /ordenes/{id}:
+    get:
+      summary: Obtener detalle de una orden (usuario o admin)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Detalle de la orden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Orden'
+        '404':
+          description: Orden no encontrada
+
+    put:
+      summary: Actualizar estado de orden (solo admin)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - estado
+              properties:
+                estado:
+                  type: string
+                  enum: [pendiente_pago, pagada, enviada, cancelada]
+      responses:
+        '200':
+          description: Estado actualizado
+        '403':
+          description: No autorizado
+
+components:
+  schemas:
+    Orden:
+      type: object
+      properties:
+        id:
+          type: string
+        usuario_id:
+          type: string
+        fecha:
+          type: string
+          format: date-time
+        estado:
+          type: string
+          enum: [pendiente_pago, pagada, enviada, cancelada]
+        total:
+          type: number
+        direccion_envio:
+          type: string
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ItemOrden'
+
+    ItemOrden:
+      type: object
+      properties:
+        producto_id:
+          type: string
+        nombre:
+          type: string
+        precio:
+          type: number
+        cantidad:
+          type: integer
+        subtotal:
+          type: number
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

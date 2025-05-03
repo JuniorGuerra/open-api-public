@@ -1,0 +1,196 @@
+openapi: 3.0.0
+info:
+  title: Servicio de Usuarios - Plataforma Ecommerce
+  version: 1.0.0
+  description: API para registrar usuarios, gestionar perfil y administrar favoritos.
+
+servers:
+  - url: http://localhost:8081
+    description: Entorno local de desarrollo
+
+paths:
+  /usuarios:
+    post:
+      summary: Registrar nuevo usuario
+      description: Crea un nuevo perfil de usuario (cliente o vendedor).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - nombre
+                - email
+                - password
+              properties:
+                nombre:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  format: password
+      responses:
+        '201':
+          description: Usuario creado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  message:
+                    type: string
+        '409':
+          description: Usuario ya registrado
+
+  /usuarios/{id}:
+    get:
+      summary: Obtener perfil de usuario
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Datos del perfil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  nombre:
+                    type: string
+                  email:
+                    type: string
+                  role:
+                    type: string
+        '404':
+          description: Usuario no encontrado
+        '401':
+          description: No autorizado
+
+    put:
+      summary: Actualizar perfil de usuario
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nombre:
+                  type: string
+                email:
+                  type: string
+      responses:
+        '200':
+          description: Perfil actualizado
+        '404':
+          description: Usuario no encontrado
+
+  /usuarios/{id}/favoritos:
+    get:
+      summary: Obtener lista de productos favoritos del usuario
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Lista de productos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    producto_id:
+                      type: string
+        '401':
+          description: No autorizado
+
+    post:
+      summary: Agregar producto a favoritos
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - producto_id
+              properties:
+                producto_id:
+                  type: string
+      responses:
+        '201':
+          description: Producto agregado
+        '400':
+          description: Error de validación
+        '401':
+          description: No autorizado
+
+    delete:
+      summary: Quitar producto de favoritos
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - producto_id
+              properties:
+                producto_id:
+                  type: string
+      responses:
+        '200':
+          description: Producto eliminado de favoritos
+        '401':
+          description: No autorizado
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

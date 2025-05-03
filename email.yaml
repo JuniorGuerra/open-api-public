@@ -1,0 +1,119 @@
+openapi: 3.0.0
+info:
+  title: Servicio de Email - Plataforma Ecommerce
+  version: 1.0.0
+  description: API para envío de correos electrónicos transaccionales y campañas simples.
+
+servers:
+  - url: http://localhost:8087
+    description: Entorno local de desarrollo
+
+paths:
+  /email/bienvenida:
+    post:
+      summary: Enviar correo de bienvenida a nuevo usuario
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - nombre
+              properties:
+                email:
+                  type: string
+                  format: email
+                nombre:
+                  type: string
+      responses:
+        '200':
+          description: Correo enviado
+
+  /email/confirmacion-orden:
+    post:
+      summary: Enviar confirmación de compra al usuario
+      description: Utilizado tras una orden pagada para enviar resumen al cliente.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - orden_id
+              properties:
+                email:
+                  type: string
+                  format: email
+                orden_id:
+                  type: string
+      responses:
+        '200':
+          description: Email enviado
+        '400':
+          description: Error de formato
+
+  /email/factura:
+    post:
+      summary: Enviar factura electrónica al cliente
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - numero_factura
+              properties:
+                email:
+                  type: string
+                  format: email
+                numero_factura:
+                  type: string
+      responses:
+        '200':
+          description: Correo enviado
+
+  /email/campaña:
+    post:
+      summary: Enviar campaña de marketing (admin)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - asunto
+                - cuerpo_html
+                - destinatarios
+              properties:
+                asunto:
+                  type: string
+                cuerpo_html:
+                  type: string
+                destinatarios:
+                  type: array
+                  items:
+                    type: string
+                    format: email
+      responses:
+        '200':
+          description: Campaña enviada
+        '403':
+          description: No autorizado (solo admins)
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

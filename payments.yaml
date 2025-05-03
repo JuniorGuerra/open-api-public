@@ -1,0 +1,113 @@
+openapi: 3.0.0
+info:
+  title: Servicio de Pagos - Plataforma Ecommerce
+  version: 1.0.0
+  description: API para procesar pagos vía Wompi y manejar notificaciones externas.
+
+servers:
+  - url: http://localhost:8085
+    description: Entorno local de desarrollo
+
+paths:
+  /pagos:
+    post:
+      summary: Procesar pago de una orden
+      description: Envía la información de la orden a Wompi y obtiene la respuesta de la pasarela.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - orden_id
+                - monto_total
+              properties:
+                orden_id:
+                  type: string
+                monto_total:
+                  type: number
+                metodo_pago:
+                  type: string
+                  enum: [tarjeta, pse, nequi]
+      responses:
+        '200':
+          description: Transacción iniciada
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  transaction_id:
+                    type: string
+                  status:
+                    type: string
+                  redirect_url:
+                    type: string
+        '400':
+          description: Datos inválidos
+        '402':
+          description: Transacción fallida
+
+  /pagos/{id}:
+    get:
+      summary: Consultar estado de transacción
+      description: Consulta a Wompi o base de datos interna el estado de un pago.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Estado del pago
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  transaction_id:
+                    type: string
+                  estado:
+                    type: string
+                    enum: [aprobada, fallida, pendiente]
+
+  /pagos/webhook:
+    post:
+      summary: Webhook de confirmación Wompi
+      description: Endpoint donde Wompi notifica cambios en el estado de una transacción.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                transaction:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    status:
+                      type: string
+                    amount_in_cents:
+                      type: integer
+                    reference:
+                      type: string
+      responses:
+        '200':
+          description: Notificación recibida correctamente
+        '400':
+          description: Error en el payload
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

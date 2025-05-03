@@ -1,0 +1,120 @@
+openapi: 3.0.0
+info:
+  title: Servicio de Carrito de Compras - Plataforma Ecommerce
+  version: 1.0.0
+  description: API para gestión del carrito de compras por usuario autenticado.
+
+servers:
+  - url: http://localhost:8083
+    description: Entorno local de desarrollo
+
+paths:
+  /carrito:
+    get:
+      summary: Obtener el carrito del usuario
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Carrito actual del usuario
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Carrito'
+        '401':
+          description: No autorizado
+
+    post:
+      summary: Agregar producto al carrito
+      description: Añade un producto al carrito o actualiza la cantidad si ya existe.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ItemCarritoInput'
+      responses:
+        '200':
+          description: Producto agregado o actualizado
+        '400':
+          description: Datos inválidos
+        '401':
+          description: No autorizado
+
+    delete:
+      summary: Vaciar el carrito del usuario
+      security:
+        - bearerAuth: []
+      responses:
+        '204':
+          description: Carrito vaciado exitosamente
+        '401':
+          description: No autorizado
+
+  /carrito/item:
+    delete:
+      summary: Eliminar un producto del carrito
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - producto_id
+              properties:
+                producto_id:
+                  type: string
+      responses:
+        '200':
+          description: Producto eliminado
+        '401':
+          description: No autorizado
+
+components:
+  schemas:
+    Carrito:
+      type: object
+      properties:
+        usuario_id:
+          type: string
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ItemCarrito'
+
+    ItemCarrito:
+      type: object
+      properties:
+        producto_id:
+          type: string
+        nombre:
+          type: string
+        precio:
+          type: number
+        cantidad:
+          type: integer
+        subtotal:
+          type: number
+
+    ItemCarritoInput:
+      type: object
+      required:
+        - producto_id
+        - cantidad
+      properties:
+        producto_id:
+          type: string
+        cantidad:
+          type: integer
+          minimum: 1
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

@@ -1,0 +1,257 @@
+openapi: 3.0.0
+info:
+  title: Servicio de Productos y Marcas - Plataforma Ecommerce
+  version: 1.0.0
+  description: API para administrar el catálogo de productos y marcas/caficultores.
+
+servers:
+  - url: http://localhost:8082
+    description: Entorno local de desarrollo
+
+paths:
+  /productos:
+    get:
+      summary: Listar productos
+      description: Retorna productos filtrados opcionalmente por marca o búsqueda.
+      parameters:
+        - in: query
+          name: marca_id
+          schema:
+            type: string
+        - in: query
+          name: search
+          schema:
+            type: string
+        - in: query
+          name: limit
+          schema:
+            type: integer
+        - in: query
+          name: offset
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Lista de productos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Producto'
+
+    post:
+      summary: Crear producto (admin)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductoInput'
+      responses:
+        '201':
+          description: Producto creado
+
+  /productos/{id}:
+    get:
+      summary: Consultar detalle de producto
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Detalle del producto
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Producto'
+        '404':
+          description: No encontrado
+
+    put:
+      summary: Actualizar producto (admin)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductoInput'
+      responses:
+        '200':
+          description: Producto actualizado
+
+    delete:
+      summary: Eliminar producto (admin)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Eliminado
+
+  /marcas:
+    get:
+      summary: Listar marcas o caficultores
+      responses:
+        '200':
+          description: Lista de marcas
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Marca'
+
+    post:
+      summary: Crear nueva marca (admin)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MarcaInput'
+      responses:
+        '201':
+          description: Marca creada
+
+  /marcas/{id}:
+    get:
+      summary: Consultar detalles de marca
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Detalle de la marca
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Marca'
+        '404':
+          description: Marca no encontrada
+
+    put:
+      summary: Actualizar marca (admin)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MarcaInput'
+      responses:
+        '200':
+          description: Marca actualizada
+
+    delete:
+      summary: Eliminar marca (admin)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Marca eliminada
+
+components:
+  schemas:
+    Producto:
+      type: object
+      properties:
+        id:
+          type: string
+        nombre:
+          type: string
+        descripcion:
+          type: string
+        precio:
+          type: number
+        stock:
+          type: integer
+        marca_id:
+          type: string
+        imagen_url:
+          type: string
+
+    ProductoInput:
+      type: object
+      required:
+        - nombre
+        - precio
+        - marca_id
+      properties:
+        nombre:
+          type: string
+        descripcion:
+          type: string
+        precio:
+          type: number
+        stock:
+          type: integer
+        marca_id:
+          type: string
+        imagen_url:
+          type: string
+
+    Marca:
+      type: object
+      properties:
+        id:
+          type: string
+        nombre:
+          type: string
+        historia:
+          type: string
+        imagen_url:
+          type: string
+
+    MarcaInput:
+      type: object
+      required:
+        - nombre
+      properties:
+        nombre:
+          type: string
+        historia:
+          type: string
+        imagen_url:
+          type: string
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
