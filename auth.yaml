@@ -1,117 +1,55 @@
+
 openapi: 3.0.0
 info:
-  title: Servicio de Autenticación - Plataforma Ecommerce
+  title: Authentication Service API
   version: 1.0.0
-  description: API para autenticación de usuarios y administradores, basada en JWT.
-
-servers:
-  - url: http://localhost:8080
-    description: Entorno local de desarrollo
-
+  description: Handles user authentication using JWT.
 paths:
   /auth/login:
     post:
-      summary: Login de usuario o administrador
-      description: Valida credenciales y devuelve un token JWT.
+      summary: User login
+      tags: [Authentication]
       requestBody:
         required: true
         content:
           application/json:
             schema:
               type: object
-              required:
-                - email
-                - password
               properties:
                 email:
                   type: string
-                  format: email
+                  example: user@example.com
                 password:
                   type: string
-                  format: password
+                  example: mypassword
       responses:
         '200':
-          description: Autenticación exitosa
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  access_token:
-                    type: string
-                  expires_in:
-                    type: integer
-                    example: 3600
-                  token_type:
-                    type: string
-                    example: Bearer
-                  role:
-                    type: string
-                    enum: [user, admin]
-        '401':
-          description: Credenciales inválidas
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-
+          description: JWT token returned
   /auth/refresh:
     post:
-      summary: Refrescar token JWT
-      description: Entrega un nuevo token de acceso usando el refresh token.
+      summary: Refresh JWT token
+      tags: [Authentication]
       requestBody:
         required: true
         content:
           application/json:
             schema:
               type: object
-              required:
-                - refresh_token
               properties:
                 refresh_token:
                   type: string
       responses:
         '200':
-          description: Nuevo token generado
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  access_token:
-                    type: string
-                  expires_in:
-                    type: integer
-        '401':
-          description: Token de refresco inválido
-
+          description: New token
   /auth/validate:
     get:
-      summary: Validar token JWT
-      description: Valida que el token es correcto y activo.
+      summary: Validate JWT token
+      tags: [Authentication]
       security:
         - bearerAuth: []
       responses:
         '200':
-          description: Token válido
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  user_id:
-                    type: string
-                  email:
-                    type: string
-                  role:
-                    type: string
-                    enum: [user, admin]
-        '401':
-          description: Token inválido o expirado
-
+          description: Token valid
 components:
   securitySchemes:
     bearerAuth:

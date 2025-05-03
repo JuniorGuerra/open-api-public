@@ -1,14 +1,14 @@
 
 openapi: 3.0.0
 info:
-  title: Email Service API
+  title: Invoice Service API
   version: 1.0.0
-  description: Send transactional and marketing emails.
+  description: Generate and retrieve invoices.
 paths:
-  /email/welcome:
+  /invoices:
     post:
-      summary: Send welcome email
-      tags: [Email]
+      summary: Create invoice
+      tags: [Invoices]
       security:
         - bearerAuth: []
       requestBody:
@@ -18,15 +18,11 @@ paths:
             schema:
               type: object
               properties:
-                email:
+                order_id:
                   type: string
-                  example: user@example.com
-                name:
-                  type: string
-                  example: Jane
       responses:
-        '200':
-          description: Email sent
+        '201':
+          description: Invoice created
 components:
   securitySchemes:
     bearerAuth:
