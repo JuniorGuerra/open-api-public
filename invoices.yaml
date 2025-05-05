@@ -1,13 +1,13 @@
-
 openapi: 3.0.0
 info:
   title: Invoice Service API
   version: 1.0.0
-  description: Generate and retrieve invoices.
+  description: Generate and retrieve invoices for completed orders.
+
 paths:
   /invoices:
     post:
-      summary: Create invoice
+      summary: Create invoice from an order
       tags: [Invoices]
       security:
         - bearerAuth: []
@@ -17,15 +17,123 @@ paths:
           application/json:
             schema:
               type: object
+              required:
+                - order_id
               properties:
                 order_id:
                   type: string
+                  example: ord-123
       responses:
         '201':
-          description: Invoice created
+          description: Invoice created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Invoice'
+        '400':
+          description: Order not found or not paid
+        '409':
+          description: Invoice already exists
+
+  /invoices/{id}:
+    get:
+      summary: Get invoice by invoice ID
+      tags: [Invoices]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            example: inv-456
+      responses:
+        '200':
+          description: Invoice details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Invoice'
+        '404':
+          description: Invoice not found
+
+  /invoices/order/{order_id}:
+    get:
+      summary: Get invoice by order ID
+      tags: [Invoices]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: order_id
+          required: true
+          schema:
+            type: string
+            example: ord-123
+      responses:
+        '200':
+          description: Invoice details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Invoice'
+        '404':
+          description: Invoice not found for the given order
+
 components:
   securitySchemes:
     bearerAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT
+
+  schemas:
+    Invoice:
+      type: object
+      properties:
+        id:
+          type: string
+          example: inv-456
+        order_id:
+          type: string
+          example: ord-123
+        issued_at:
+          type: string
+          format: date-time
+          example: 2025-05-02T19:00:00Z
+        customer:
+          type: object
+          properties:
+            name:
+              type: string
+              example: Jane Doe
+            email:
+              type: string
+              example: jane@example.com
+            identification:
+              type: string
+              example: 123456789
+        total:
+          type: number
+          example: 75000
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              product_id:
+                type: string
+                example: prod-001
+              name:
+                type: string
+                example: Colombian Coffee
+              quantity:
+                type: integer
+                example: 2
+              unit_price:
+                type: number
+                example: 34000
+              subtotal:
+                type: number
+                example: 68000

@@ -1,9 +1,9 @@
-
 openapi: 3.0.0
 info:
   title: Product Service API
   version: 1.0.0
   description: Manage and list products and brands.
+
 paths:
   /products:
     get:
@@ -18,6 +18,129 @@ paths:
           name: search
           schema:
             type: string
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            example: 10
+        - in: query
+          name: offset
+          schema:
+            type: integer
+            example: 0
       responses:
         '200':
           description: List of products
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
+
+    post:
+      summary: Create a new product
+      tags: [Products]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductInput'
+      responses:
+        '201':
+          description: Product created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '400':
+          description: Invalid input
+        '401':
+          description: Unauthorized
+
+  /products/{id}:
+    get:
+      summary: Get product by ID
+      tags: [Products]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            example: prod-001
+      responses:
+        '200':
+          description: Product details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '404':
+          description: Product not found
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Product:
+      type: object
+      properties:
+        id:
+          type: string
+          example: prod-001
+        name:
+          type: string
+          example: Colombian Coffee
+        description:
+          type: string
+          example: Single origin coffee from Huila.
+        price:
+          type: number
+          format: float
+          example: 34000
+        stock:
+          type: integer
+          example: 20
+        brand_id:
+          type: string
+          example: brand-xyz
+        image_url:
+          type: string
+          format: uri
+          example: https://example.com/images/prod-001.jpg
+
+    ProductInput:
+      type: object
+      required:
+        - name
+        - price
+        - brand_id
+      properties:
+        name:
+          type: string
+          example: Colombian Coffee
+        description:
+          type: string
+          example: Single origin coffee from Huila.
+        price:
+          type: number
+          format: float
+          example: 34000
+        stock:
+          type: integer
+          example: 20
+        brand_id:
+          type: string
+          example: brand-xyz
+        image_url:
+          type: string
+          format: uri
+          example: https://example.com/images/prod-001.jpg

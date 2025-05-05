@@ -1,0 +1,109 @@
+openapi: 3.0.0
+info:
+  title: Brand Service API
+  version: 1.0.0
+  description: Manage coffee brands or farm owners, including their stories and products.
+
+paths:
+  /brands:
+    get:
+      summary: List all brands or farm profiles
+      tags: [Brands]
+      responses:
+        '200':
+          description: List of brands
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Brand'
+
+    post:
+      summary: Create a new brand (admin or verified seller)
+      tags: [Brands]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BrandInput'
+      responses:
+        '201':
+          description: Brand created
+
+  /brands/{id}:
+    get:
+      summary: Get brand by ID
+      tags: [Brands]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            example: brand-001
+      responses:
+        '200':
+          description: Brand details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Brand'
+        '404':
+          description: Brand not found
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Brand:
+      type: object
+      properties:
+        id:
+          type: string
+          example: brand-001
+        name:
+          type: string
+          example: Finca El Paraíso
+        story:
+          type: string
+          example: "Located in the mountains of Huila, this family-owned farm has been producing specialty coffee for over 30 years..."
+        location:
+          type: string
+          example: Pitalito, Huila
+        image_url:
+          type: string
+          format: uri
+          example: https://example.com/brands/paraiso.jpg
+        owner_name:
+          type: string
+          example: Juan Valdez
+        products:
+          type: array
+          items:
+            type: string
+            example: prod-001
+
+    BrandInput:
+      type: object
+      required:
+        - name
+        - story
+      properties:
+        name:
+          type: string
+        story:
+          type: string
+        location:
+          type: string
+        image_url:
+          type: string
+        owner_name:
+          type: string

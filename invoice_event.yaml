@@ -1,0 +1,66 @@
+
+asyncapi: 2.6.0
+info:
+  title: Invoice Events - Ecommerce Platform
+  version: 1.0.0
+  description: AsyncAPI specification for invoice service event consumption.
+
+channels:
+  order.completed:
+    description: Event emitted when an order is successfully paid and completed.
+    subscribe:
+      summary: Trigger invoice generation
+      operationId: handleOrderCompleted
+      message:
+        name: OrderCompleted
+        title: Order Completed Event
+        contentType: application/json
+        payload:
+          type: object
+          required:
+            - order_id
+            - user_id
+            - total
+            - items
+          properties:
+            order_id:
+              type: string
+              example: ord-123
+            user_id:
+              type: string
+              example: user-001
+            total:
+              type: number
+              example: 75000
+            items:
+              type: array
+              items:
+                type: object
+                properties:
+                  product_id:
+                    type: string
+                    example: prod-001
+                  name:
+                    type: string
+                    example: Colombian Coffee
+                  quantity:
+                    type: integer
+                    example: 2
+                  price:
+                    type: number
+                    example: 34000
+                  subtotal:
+                    type: number
+                    example: 68000
+            customer:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: Jane Doe
+                email:
+                  type: string
+                  example: jane@example.com
+                identification:
+                  type: string
+                  example: 123456789

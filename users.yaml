@@ -1,9 +1,9 @@
-
 openapi: 3.0.0
 info:
   title: User Service API
   version: 1.0.0
   description: Manage user registration and profile.
+
 paths:
   /users:
     post:
@@ -15,6 +15,10 @@ paths:
           application/json:
             schema:
               type: object
+              required:
+                - name
+                - email
+                - password
               properties:
                 name:
                   type: string
@@ -28,3 +32,18 @@ paths:
       responses:
         '201':
           description: User created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    example: "user_123456"
+                  message:
+                    type: string
+                    example: User successfully registered.
+        '400':
+          description: Invalid input
+        '409':
+          description: Email already registered

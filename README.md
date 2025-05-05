@@ -22,13 +22,13 @@ Each file corresponds to a separate microservice:
 
 You can view these files in any OpenAPI-compatible viewer such as:
 
-- [Swagger Editor](https://editor.swagger.io/)
+- [Swagger Editor](https://editor-next.swagger.io/)
 - [ReDocly](https://redocly.github.io/redoc/)
 
 ## 🚀 Deployment Notes
 
 - All services are intended to be deployed as independent containers or pods.
-- Communication between services can be done using gRPC or REST.
+- Communication between services can be done using REST.
 - JWT is used for authentication across all services (see `bearerAuth` scheme).
 
 ## 🧪 Example
@@ -48,11 +48,12 @@ All protected routes require a JWT bearer token as described in the `components.
 
 | Microservice       | Swagger Editor Link                                                                                   |
 |--------------------|--------------------------------------------------------------------------------------------------------|
-| Authentication     | [Open in Swagger](https://editor.swagger.io/?url=https://raw.githubusercontent.com/JuniorGuerra/open-api-public/refs/heads/dev/auth.yaml)     |
-| Users              | [Open in Swagger](https://editor.swagger.io/?url=https://raw.githubusercontent.com/JuniorGuerra/open-api-public/refs/heads/dev/users.yaml)    |
-| Products & Brands  | [Open in Swagger](https://editor.swagger.io/?url=https://raw.githubusercontent.com/JuniorGuerra/open-api-public/refs/heads/dev/products.yaml) |
-| Cart               | [Open in Swagger](https://editor.swagger.io/?url=https://raw.githubusercontent.com/JuniorGuerra/open-api-public/refs/heads/dev/cart.yaml)     |
-| Orders             | [Open in Swagger](https://editor.swagger.io/?url=https://raw.githubusercontent.com/JuniorGuerra/open-api-public/refs/heads/dev/orders.yaml)   |
-| Payments (Wompi)   | [Open in Swagger](https://editor.swagger.io/?url=https://raw.githubusercontent.com/JuniorGuerra/open-api-public/refs/heads/dev/payments.yaml) |
-| Invoices           | [Open in Swagger](https://editor.swagger.io/?url=https://raw.githubusercontent.com/JuniorGuerra/open-api-public/refs/heads/dev/invoices.yaml) |
-| Email              | [Open in Swagger](https://editor.swagger.io/?url=https://raw.githubusercontent.com/JuniorGuerra/open-api-public/refs/heads/dev/email.yaml)     |
+| Authentication     | [Open in Swagger](https://editor-next.swagger.io/?url=https://raw.githubusercontent.com/JuniorGuerra/open-api-public/refs/heads/dev/auth.yaml)     |
+| Users              | [Open in Swagger](https://editor-next.swagger.io/?url=https://raw.githubusercontent.com/JuniorGuerra/open-api-public/refs/heads/dev/users.yaml)    |
+| Products           | [Open in Swagger](https://editor-next.swagger.io/?url=https://raw.githubusercontent.com/JuniorGuerra/open-api-public/refs/heads/dev/products.yaml) |
+| Brands             | [Open in Swagger](https://editor-next.swagger.io/?url=https://raw.githubusercontent.com/JuniorGuerra/open-api-public/refs/heads/dev/brands.yaml) |
+| Cart               | [Open in Swagger](https://editor-next.swagger.io/?url=https://raw.githubusercontent.com/JuniorGuerra/open-api-public/refs/heads/dev/cart.yaml)     |
+| Orders             | [Open in Swagger](https://editor-next.swagger.io/?url=https://raw.githubusercontent.com/JuniorGuerra/open-api-public/refs/heads/dev/orders.yaml)   |
+| Payments (Wompi)   | [Open in Swagger](https://editor-next.swagger.io/?url=https://raw.githubusercontent.com/JuniorGuerra/open-api-public/refs/heads/dev/payments.yaml) |
+| Invoices           | [Open in Swagger](https://editor-next.swagger.io/?url=https://raw.githubusercontent.com/JuniorGuerra/open-api-public/refs/heads/dev/invoices.yaml) |
+| Email              | [Open in Swagger](https://editor-next.swagger.io/?url=https://raw.githubusercontent.com/JuniorGuerra/open-api-public/refs/heads/dev/email.yaml)     |

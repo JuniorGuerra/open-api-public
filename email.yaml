@@ -1,22 +1,28 @@
-
 openapi: 3.0.0
 info:
   title: Email Service API
   version: 1.0.0
-  description: Send transactional and marketing emails.
+  description: Send transactional and marketing emails. Most email triggers are handled via asynchronous events.
+
 paths:
   /email/welcome:
     post:
-      summary: Send welcome email
+      summary: Manually trigger welcome email (fallback)
       tags: [Email]
       security:
         - bearerAuth: []
+      description: |
+        Sends a welcome email to the user. Normally this is triggered automatically via an event (e.g., USER_REGISTERED),
+        but this endpoint is available for manual use or fallback scenarios.
       requestBody:
         required: true
         content:
           application/json:
             schema:
               type: object
+              required:
+                - email
+                - name
               properties:
                 email:
                   type: string
@@ -26,7 +32,8 @@ paths:
                   example: Jane
       responses:
         '200':
-          description: Email sent
+          description: Email sent successfully
+
 components:
   securitySchemes:
     bearerAuth:
